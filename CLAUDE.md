@@ -13,6 +13,15 @@ who knows basic JavaScript. Sibling repos in the same style:
 Note: Unity uses C#, not C++. Unreal Engine is the C++ engine. The repo name
 `unreal101` reflects that. Do not write C# content here.
 
+## Status
+
+All lessons (00-34, two bonus lessons, `appendix-cmake`) are written, reviewed
+from a student's point of view, fixed and line-edited. Part 1 builds and runs
+with g++ under ASan/UBSan. Part 2 has **never been compiled** against a real
+Unreal install, and Windows/MSVC details are unchecked. Open checks live in
+`docs/part1-verify.md` and `docs/part2-verify.md`. Licenses: MIT for code
+(`LICENSE`), CC BY 4.0 for text and posters (`LICENSE-CONTENT`).
+
 ## Public-repo rules (hard)
 
 - Nothing fleet-specific or private: no real hostnames, IPs, usernames,
