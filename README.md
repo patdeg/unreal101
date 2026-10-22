@@ -108,4 +108,11 @@ Do the lessons in order.
 
 ## License
 
-To be decided before the first lesson is published.
+- **Code** (the `.cpp`, `.h` and `Source/` files) is under the [MIT License](LICENSE).
+- **Lessons, text and posters** are under
+  [Creative Commons Attribution 4.0](LICENSE-CONTENT) (CC BY 4.0). Use and
+  adapt them freely, including for teaching, and credit "Patrick Deglon" with
+  a link to this repository.
+- Unreal Engine is a product of Epic Games and is covered by Epic's own
+  license terms, not by this repository's license. These lessons only show how
+  to use its API.
