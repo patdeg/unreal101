@@ -1,0 +1,34 @@
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Internal planning/session notes - not part of the public teaching content
+docs/
+
+# Build output from lesson exercises
+build/
+**/build/
+*.o
+*.obj
+*.exe
+*.out
+a.out
+
+# Unreal Engine generated folders (never commit these)
+**/Binaries/
+**/Intermediate/
+**/Saved/
+**/DerivedDataCache/
+**/.vs/
+*.sln
+*.VC.db
+
+# Local env files
+.env
+**/.env
+!**/.env.example
