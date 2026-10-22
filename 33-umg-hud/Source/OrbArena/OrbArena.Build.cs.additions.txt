@@ -1,0 +1,37 @@
+OrbArena.Build.cs.additions.txt - Lesson 33: A HUD on screen
+
+This is NOT a whole file. Open Source/OrbArena/OrbArena.Build.cs (it came
+with the template) and make the change below. Keep everything else.
+
+Do this FIRST, before you create the OrbHUDWidget class with the wizard.
+The wizard compiles the new class right away, and a widget class cannot
+link without "UMG" in this list (you would get LNK2019 errors).
+
+OrbArena.Build.cs is a settings file for Unreal's build tool. It is written
+in C#, which is why it looks a little different from C++. You only change a
+list of names in it: think of it as the "dependencies" list of a
+package.json in JavaScript.
+
+------------------------------------------------------------------------------
+1. Find the line that starts with PublicDependencyModuleNames.AddRange. It
+   looks something like this (your list may be longer, and the order may
+   differ):
+
+	PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
+
+2. If "UMG" is not already in that list, add it, with quotes and a comma:
+
+	PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG" });
+
+3. If your file has a PrivateDependencyModuleNames line, make sure it
+   contains "Slate" and "SlateCore". If it does not have such a line, add
+   this one right below the public one:
+
+	PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+
+   (UMG, Unreal's UI system, is built on top of Slate. Listing them is how
+   you tell the linker "my code uses these modules".)
+------------------------------------------------------------------------------
+
+After changing a .Build.cs file: close the editor, right-click
+OrbArena.uproject > Generate Visual Studio project files, then build.

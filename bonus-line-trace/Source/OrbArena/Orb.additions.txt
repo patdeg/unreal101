@@ -1,0 +1,19 @@
+// Orb.additions.txt - Bonus: line traces
+//
+// NOT a whole file. In Orb.cpp, in the AOrb constructor, find this line from
+// lesson 22:
+//
+//     Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+//
+// and REPLACE it with these lines:
+
+	// The player still walks through orbs (we ignore every channel)...
+	// ...but line traces on the Visibility channel now STOP at the orb.
+	//
+	// QueryOnly: the mesh can be found by traces and overlaps, but it never
+	// physically pushes anything.
+	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	Mesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+
+// This is a constructor change: close the editor and rebuild.

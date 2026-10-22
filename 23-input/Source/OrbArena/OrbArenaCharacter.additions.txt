@@ -1,0 +1,83 @@
+// OrbArenaCharacter.additions.txt - Lesson 23: The player presses a key
+//
+// This is NOT a whole file. OrbArenaCharacter.h and OrbArenaCharacter.cpp came
+// with the Third Person template and are long. Keep them. ADD the pieces below
+// in the places described. (It is a .txt file so nobody compiles it by
+// accident.)
+//
+// ============================================================================
+// PART 1: OrbArenaCharacter.h
+// ============================================================================
+//
+// Inside the class, find where the template declares its other input actions
+// (members like JumpAction, MoveAction, LookAction). Add these lines next to
+// them, in the same section:
+
+	/** NEW (lesson 23): the Dash input action. Set it in the character Blueprint. */
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> DashAction;
+
+	/** NEW (lesson 23): how hard the dash pushes, in cm per second. */
+	UPROPERTY(EditAnywhere, Category = "Dash")
+	float DashStrength = 1500.f;
+
+// Then, in a protected: section of the same class (add the word protected:
+// if you need to), declare the function the key will call:
+
+protected:
+	/** NEW (lesson 23): called when the Dash key is pressed. */
+	void Dash();
+
+// Note: the header should already contain the line
+//     class UInputAction;
+// near the top (a forward declaration, lesson 14). If it does not, add it
+// above the UCLASS() line.
+//
+// ============================================================================
+// PART 2: OrbArenaCharacter.cpp, inside SetupPlayerInputComponent
+// ============================================================================
+//
+// Find the function SetupPlayerInputComponent. Inside it, the template gets an
+// Enhanced Input component (usually in a variable named EnhancedInputComponent)
+// and then calls BindAction several times, for jumping, moving and looking.
+// Add this right after those BindAction lines, INSIDE the same if-block:
+
+		// NEW (lesson 23)
+		// BindAction(which action, which moment, which object, which function)
+		//   DashAction                    - the Input Action asset (IA_Dash)
+		//   ETriggerEvent::Started        - the moment the key goes down
+		//                                   (an enum class, lesson 09)
+		//   this                          - call the function on THIS character
+		//   &AOrbArenaCharacter::Dash     - the address of the member function
+		//                                   to call (lessons 11 and 16)
+		if (DashAction)
+		{
+			EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Started,
+				this, &AOrbArenaCharacter::Dash);
+		}
+		else
+		{
+			// A message for your future self. Things set in the editor can be
+			// missing, so say clearly what is wrong and where to fix it.
+			UE_LOG(LogTemp, Error,
+				TEXT("DashAction is empty. Open the character Blueprint and set Dash Action to IA_Dash."));
+		}
+
+// If the template names that variable differently, use the template's name.
+//
+// ============================================================================
+// PART 3: OrbArenaCharacter.cpp, a new function at the bottom of the file
+// ============================================================================
+
+void AOrbArenaCharacter::Dash()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Dash!"));
+
+	// GetActorForwardVector() is a direction of length 1 pointing where the
+	// character faces. Times DashStrength, it becomes a velocity.
+	//
+	// LaunchCharacter(velocity, replace XY speed?, replace Z speed?)
+	//   true  - replace the horizontal speed (a sharp dash, not a nudge)
+	//   false - keep the vertical speed (so gravity still works)
+	LaunchCharacter(GetActorForwardVector() * DashStrength, true, false);
+}

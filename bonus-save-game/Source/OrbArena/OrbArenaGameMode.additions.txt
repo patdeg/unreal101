@@ -1,0 +1,91 @@
+// OrbArenaGameMode.additions.txt - Bonus: saving
+//
+// NOT a whole file. These are additions to the capstone's GameMode
+// (34-capstone/Source/OrbArena/OrbArenaGameMode.h and .cpp). Keep everything
+// you have; ADD the pieces below.
+//
+// ============================================================================
+// PART 1: OrbArenaGameMode.h, inside the class, in the protected: section
+// ============================================================================
+
+	// NEW (bonus): the best score ever, loaded from disk at the start.
+	UPROPERTY(VisibleAnywhere, Category = "Score")
+	int32 HighScore = 0;
+
+	// NEW (bonus): read and write the save file.
+	void LoadHighScore();
+	void SaveHighScore();
+
+// ============================================================================
+// PART 2: OrbArenaGameMode.cpp, includes at the top
+// ============================================================================
+
+#include "OrbSaveGame.h"
+#include "Kismet/GameplayStatics.h"   // the save and load functions
+// (If you already finished capstone milestone 5, that second line is already
+// there. Including a header twice is harmless: #pragma once, lesson 14.)
+
+// And, below the includes, the name of the save "slot". A slot is a named
+// save file. UserIndex 0 means the first (and only) local player.
+static const TCHAR* const HighScoreSlot = TEXT("OrbArenaHighScore");
+static const int32 HighScoreUserIndex = 0;
+
+// ============================================================================
+// PART 3: OrbArenaGameMode.cpp, at the start of BeginPlay, after Super::BeginPlay()
+// ============================================================================
+
+	LoadHighScore();
+	UE_LOG(LogTemp, Warning, TEXT("High score so far: %d"), HighScore);
+
+// ============================================================================
+// PART 4: OrbArenaGameMode.cpp, in EndRound, right before OnGameOver.Broadcast
+// ============================================================================
+
+	if (Score > HighScore)
+	{
+		HighScore = Score;
+		SaveHighScore();
+		UE_LOG(LogTemp, Warning, TEXT("New high score: %d!"), HighScore);
+	}
+
+// ============================================================================
+// PART 5: OrbArenaGameMode.cpp, two new functions at the bottom
+// ============================================================================
+
+void AOrbArenaGameMode::LoadHighScore()
+{
+	// No save file yet (the very first play)? Then there is nothing to load.
+	if (!UGameplayStatics::DoesSaveGameExist(HighScoreSlot, HighScoreUserIndex))
+	{
+		return;
+	}
+
+	// LoadGameFromSlot gives back a general USaveGame*. Cast it to ours
+	// (lesson 24): it could be nullptr if the file is broken or from an older
+	// version of the game.
+	UOrbSaveGame* Save = Cast<UOrbSaveGame>(
+		UGameplayStatics::LoadGameFromSlot(HighScoreSlot, HighScoreUserIndex));
+	if (Save != nullptr)
+	{
+		HighScore = Save->HighScore;
+	}
+}
+
+void AOrbArenaGameMode::SaveHighScore()
+{
+	// Make a fresh save object of OUR class, fill it, write it.
+	UOrbSaveGame* Save = Cast<UOrbSaveGame>(
+		UGameplayStatics::CreateSaveGameObject(UOrbSaveGame::StaticClass()));
+	if (Save == nullptr)
+	{
+		return;
+	}
+
+	Save->HighScore = HighScore;
+
+	// Returns true if the file was written.
+	if (!UGameplayStatics::SaveGameToSlot(Save, HighScoreSlot, HighScoreUserIndex))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Could not write the save file."));
+	}
+}

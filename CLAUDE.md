@@ -4,8 +4,8 @@ Guidance for AI assistants working in this repo.
 
 ## What this repo is
 
-A **public** teaching repo: a 25-lesson path to learn C++ (lessons 01-12),
-then C++ in Unreal Engine 5.8 (lessons 13-24), then a capstone (25). Audience: a high-school student
+A **public** teaching repo: a 33-lesson path to learn C++ (lessons 01-18),
+then C++ in Unreal Engine 5.8 (lessons 19-33), then a capstone (34). Audience: a high-school student
 who knows basic JavaScript. Sibling repos in the same style:
 `github.com/patdeg/ai101` and `github.com/patdeg/hello-docker`. Look at
 `hello-docker` for the lesson-folder conventions before writing a lesson.
@@ -28,14 +28,20 @@ Note: Unity uses C#, not C++. Unreal Engine is the C++ engine. The repo name
 
 ```
 README.md           public front door and lesson table
+GLOSSARY.md         plain-language glossary of terms used in the lessons
+my-arena/           student scratch folder (gitignored)
 CLAUDE.md           this file
 docs/               gitignored planning notes (curriculum.md lives here)
 docs/poster/        PRIVATE build scripts for the posters (build.py, generate_images.py)
-posters/            public print-ready PDFs (Super B 13x19 and Letter)
+posters/            public print-ready PDFs (C++ and Unreal posters, each in Super B 13x19 and Letter)
 NN-lesson-name/     one folder per lesson, zero-padded, kebab-case
 ```
 
-Each lesson folder has a `README.md` plus source files. Part 2 lessons that
+Each lesson folder has a `README.md` plus source files. In Part 1, each lesson's
+`main.cpp` is the whole Text Arena so far (a reference to compare against).
+Part 2 lessons are written for UE 5.8 but have not been run on a real install;
+the private list of open checks is `docs/part2-verify.md` (and `docs/part1-verify.md`
+for MSVC items). Part 2 lessons that
 need an Unreal project keep only the `Source/` code and config in git, never
 generated folders (see `.gitignore`).
 

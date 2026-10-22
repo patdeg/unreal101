@@ -10,6 +10,9 @@ Thumbs.db
 # Internal planning/session notes - not part of the public teaching content
 docs/
 
+# The student's own working copy of the Text Arena (see 00-start-here)
+my-arena/
+
 # Build output from lesson exercises
 build/
 **/build/
@@ -18,6 +21,21 @@ build/
 *.exe
 *.out
 a.out
+*.pdb
+*.ilk
+*.idb
+*.exp
+*.lib
+*.dll
+*.log
+*.dSYM/
+Debug/
+Release/
+x64/
+# Linux/macOS binaries built from lesson sources (lesson folders only)
+[0-9][0-9]-*/*
+![0-9][0-9]-*/*.*
+![0-9][0-9]-*/*/
 
 # Unreal Engine generated folders (never commit these)
 **/Binaries/
@@ -27,6 +45,19 @@ a.out
 **/.vs/
 *.sln
 *.VC.db
+*.vcxproj*
+*.suo
+*.user
+*.sdf
+*.opensdf
+*.ipch
+**/Content/
+*.uasset
+*.umap
+
+# Local assistant settings
+.claude/
+CLAUDE.local.md
 
 # Local env files
 .env

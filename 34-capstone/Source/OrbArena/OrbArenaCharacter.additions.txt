@@ -1,0 +1,143 @@
+// OrbArenaCharacter.additions.txt - Lesson 34: Capstone, Orb Arena 1.0
+//
+// NOT a whole file. Keep your template's OrbArenaCharacter.h and .cpp, with
+// lesson 23's dash already in them, and ADD the pieces below.
+// (A .txt file so nobody compiles it by accident.)
+//
+// The pieces are grouped BY MILESTONE. At milestone N, add only the sections
+// for milestones up to N. Each section builds on its own with what came
+// before it. (A piece from a later milestone uses functions that do not
+// exist yet, and the build fails.)
+//
+//   Milestone 1: sections 1A, 1B, 1C
+//   Milestone 3: section 3A
+//   Milestone 5: sections 5A, 5B, 5C, 5D
+//
+// ############################################################################
+// MILESTONE 1: the dash stuns enemies
+// ############################################################################
+//
+// ----------------------------------------------------------------------------
+// 1A. OrbArenaCharacter.h, next to DashAction and DashStrength
+// ----------------------------------------------------------------------------
+
+	/** NEW (milestone 1): enemies closer than this when you dash get stunned. */
+	UPROPERTY(EditAnywhere, Category = "Dash")
+	float StunRadius = 300.f;
+
+	/** NEW (milestone 1): how long a stun lasts, in seconds. */
+	UPROPERTY(EditAnywhere, Category = "Dash")
+	float StunSeconds = 2.f;
+
+// ----------------------------------------------------------------------------
+// 1B. OrbArenaCharacter.cpp, includes at the top (below the existing ones)
+// ----------------------------------------------------------------------------
+
+#include "Enemy.h"                     // NEW (milestone 1): AEnemy, Stun
+#include "Kismet/GameplayStatics.h"    // NEW (milestone 1): GetAllActorsOfClass
+
+// ----------------------------------------------------------------------------
+// 1C. OrbArenaCharacter.cpp, REPLACE lesson 23's Dash() with this one
+// ----------------------------------------------------------------------------
+
+void AOrbArenaCharacter::Dash()
+{
+	LaunchCharacter(GetActorForwardVector() * DashStrength, true, false);
+
+	// NEW (milestone 1): stun every enemy close enough.
+	// GetAllActorsOfClass, lesson 26.
+	TArray<AActor*> Enemies;
+	UGameplayStatics::GetAllActorsOfClass(this, AEnemy::StaticClass(), Enemies);
+	for (AActor* Actor : Enemies)
+	{
+		AEnemy* Enemy = Cast<AEnemy>(Actor);
+		if (Enemy != nullptr
+			&& FVector::Dist(GetActorLocation(), Enemy->GetActorLocation()) < StunRadius)
+		{
+			Enemy->Stun(StunSeconds);
+		}
+	}
+}
+
+// ############################################################################
+// MILESTONE 3: no dashing after the round is over
+// ############################################################################
+//
+// ----------------------------------------------------------------------------
+// 3A. OrbArenaCharacter.cpp
+// ----------------------------------------------------------------------------
+//
+// Add two more includes at the top:
+
+#include "Engine/World.h"              // NEW (milestone 3): GetWorld()
+#include "OrbArenaGameMode.h"          // NEW (milestone 3): IsRoundOver
+
+// Then add this check at the very top of Dash(), before LaunchCharacter.
+// (IsRoundOver exists only from milestone 3 on, in the GameMode.)
+
+	// NEW (milestone 3): no dashing after the final whistle.
+	AOrbArenaGameMode* GameMode = GetWorld()->GetAuthGameMode<AOrbArenaGameMode>();
+	if (GameMode != nullptr && GameMode->IsRoundOver())
+	{
+		return;
+	}
+
+// The finished Dash(), after milestone 3, therefore looks like this:
+//
+//   void AOrbArenaCharacter::Dash()
+//   {
+//       [the milestone 3 check above]
+//       LaunchCharacter(...);
+//       [the milestone 1 stun loop]
+//   }
+//
+// ############################################################################
+// MILESTONE 5: the restart key
+// ############################################################################
+//
+// ----------------------------------------------------------------------------
+// 5A. OrbArenaCharacter.h, next to DashAction
+// ----------------------------------------------------------------------------
+
+	/** NEW (milestone 5): the Restart input action (IA_Restart, mapped to R). */
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> RestartAction;
+
+// ----------------------------------------------------------------------------
+// 5B. OrbArenaCharacter.h, in the protected: section, next to Dash()
+// ----------------------------------------------------------------------------
+
+	/** NEW (milestone 5): called when the Restart key is pressed. */
+	void RestartGame();
+
+// Why not just "Restart"? Because APawn (a parent of every Character) already
+// has a virtual function called Restart() that the engine calls when the pawn
+// is possessed. A function with the same name and parameters in our class
+// would silently OVERRIDE it (lesson 15) and break the engine's own setup.
+// When you pick names in a class with a big parent, choose specific ones.
+//
+// ----------------------------------------------------------------------------
+// 5C. OrbArenaCharacter.cpp, in SetupPlayerInputComponent, next to the
+//     DashAction binding from lesson 23 (inside the same if-block)
+// ----------------------------------------------------------------------------
+
+		if (RestartAction)
+		{
+			EnhancedInputComponent->BindAction(RestartAction, ETriggerEvent::Started,
+				this, &AOrbArenaCharacter::RestartGame);
+		}
+
+// ----------------------------------------------------------------------------
+// 5D. OrbArenaCharacter.cpp, a new function at the bottom
+// ----------------------------------------------------------------------------
+// (RestartRound exists only from milestone 5 on, in the GameMode. The
+// includes it needs were added in section 3A.)
+
+void AOrbArenaCharacter::RestartGame()
+{
+	// The GameMode decides whether restarting is allowed right now.
+	if (AOrbArenaGameMode* GameMode = GetWorld()->GetAuthGameMode<AOrbArenaGameMode>())
+	{
+		GameMode->RestartRound();
+	}
+}
